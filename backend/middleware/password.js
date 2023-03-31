@@ -10,4 +10,10 @@ passwordSchema
     .has().not().spaces()//pas d'espace
 
 
-module.exports = passwordSchema;
+module.exports = (req, res, next) => {
+    if(passwordSchema.validate(req.body.password)){
+        next();
+    }else{
+        return res.status(400).json({error : `le mot de passe n'est pas assez fort`})
+    }
+}

@@ -6,6 +6,7 @@ const fs = require('fs');
 //Création d'une nouvelle sauce
 exports.createSauce = (req, res, next) => {
     const sauceObject = JSON.parse(req.body.sauce);
+    console.log(req.body)
     delete sauceObject._id;
      const sauce = new Sauce({
         ...sauceObject,
@@ -84,7 +85,7 @@ exports.deleteSauce = (req, res, next) => {
                                 message: 'Sauce supprimée !'
                             });
                         })
-                        .catch((error) => res.status(401).json({ error }));
+                        .catch((error) => res.status(404).json({ error }));
                 });
             }
         })
@@ -113,7 +114,7 @@ exports.likeSauce = (req, res, next) => {
         .then(sauce => {
             if (req.body.like === 1) {
                 if ((sauce.usersLiked.includes(req.body.userId)) || (sauce.usersDisliked.includes(req.body.userId))) {
-                    res.status(401).json({ error: 'Sauce déja liké ou disliké' });
+                    res.status(402).json({ error: 'Sauce déja liké ou disliké' });
                 }
                 else {
                     Sauce.updateOne({ _id: req.params.id }, { $inc: { likes: req.body.like++ }, $push: { usersLiked: req.body.userId } })
@@ -123,7 +124,7 @@ exports.likeSauce = (req, res, next) => {
             }
             else if (req.body.like === -1) {
                 if ((sauce.usersLiked.includes(req.body.userId)) || (sauce.usersDisliked.includes(req.body.userId))) {
-                    res.status(401).json({ error: 'Sauce déja liké ou disliké' });
+                    res.status(403).json({ error: 'Sauce déja liké ou disliké' });
                 } else {
                     Sauce.updateOne({ _id: req.params.id }, { $inc: { dislikes: (req.body.like++) * -1 }, $push: { usersDisliked: req.body.userId } })
                         .then((sauce) => res.status(200).json({ message: 'Dislike ajouté !' }))
